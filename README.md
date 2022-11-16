@@ -1,3 +1,17 @@
+# 前言
+
+我在尝试将Verilog文件进行格式对齐，<u>目前仅实现了module声明部分的对齐，后续将会持续更新。</u>
+
+可能有些许bug，持续修订中
+
+# 执行方式
+
+将.v文件添加进`file_list`，然后执行`perl main.pl`命令，对齐后的.v文件存放在/temp文件夹下。
+
+目前在windows 10 系统下执行正常
+
+# 一. 总体规划
+
 首先划分为三个结构
 
 >==module结构==
@@ -83,128 +97,7 @@
 
 4+2=6
 
-
-
-
-
-
-
-
-
-```perl
-#!/usr/bin/perl -w
-
-
-open(FILEIN,"<./file_list");
-@all_files = <FILEIN>;
-close FILEIN;
-
-system ("mkdir -p temp");
-$tab_num = "    ";
-foreach $a (@all_files)
-{
-        open (FILETEMP,"< $a");
-        @lines = <FILETEMP>;
-        close FILETEMP;
-
-        open(FILEOUT,"> ./temp/$a");
-
-        my @cont = delete_note(@lines);
-        @cont = tab_space_convert(@cont);
-        foreach (@cont){
-            print FILEOUT $_;
-        }
-        close FILEOUT;
-}
-
-#第1步:将Tab键替换为空格
-#第2步:删除前导和拖尾空格
-sub tab_space_convert{
-  my $lines = scalar(@_) ;
-  my $line;
-  my @output;
-  foreach (@lines){
-    $line = $_;
-    $line =~s/\t/$tab_num/g;
-    $line =~s/^ +| +$//g;
-    push(@output,$line);
-  }
-  return @output;
-}
-
-
-#删除注释
-sub delete_note{
-    my $lines = scalar(@_);
-    my @output;
-    my $flag = 0;
-    my $type = 0;
-    foreach (@lines)
-    {
-        if (/\/\/.*/){s/\/\/.*//g;}
-
-        if ((/\/\*/) && (/\*\//))
-          {
-            s/\/\*.*\*\///g;
-            $flag=0; $type=0;
-          }
-        if (/\/\*/)
-          {
-            $flag=1; $type=1;
-          }
-        elsif (/\*\//)
-          {
-            $flag=1; $type=0;
-          }
-        else
-          {
-            $flag=0;
-          }
-
-        if (($flag==0) && ($type==0))
-          {
-              push(@output , $_) ; 
-          }
-    }
-    return @output;
-}
-
-#匹配并调整module的头部分,其余部分直接原封不动地返回
-sub head_module{
-
-}
-```
-
-```perl
-#modle分行测试通过
-#!/usr/bin/perl 
-
-$module = 'aaaaa module 
-bbbbbbbbbbbbb
-ccccccccccccc';
-$b = 'module (
-    sflsjfl';
-my @module_line;
-my @tmp_array;
-if ( $module =~ /\s+module[\s\(]+/)
-    {
-        @module_line = split(/\s+module[\s\(]+/, $module);
-        if(1 == scalar(@module_line)){
-            @module_line[0] = $module;
-        }elsif (2 == scalar(@module_line)){
-            @tmp_array = split(/@module_line[0]/,$module);
-            @tmp_array = split(/\s/,@tmp_array[1],2);#去除module前面的空格
-            @module_line[1] = @tmp_array[1];
-        }else{
-            print "module_line wrong\n";
-        }
-    }
-
-
-foreach(@module_line){
-    print $_."\n"; 
-}    
-```
+  
 
 
 
