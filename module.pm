@@ -184,7 +184,6 @@ sub align_module{
                         #即"module (",小括号后没有字母
                         $head = ' 'x4;
                         push(@output,$line);
-                        $cnt ++ ;
                         next; 
                     }else{
                         #小括号后有字母,则有前缀长度
