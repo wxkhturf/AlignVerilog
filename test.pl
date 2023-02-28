@@ -5,8 +5,8 @@ use Cwd qw( getcwd abs_path);
 my $path = abs_path(getcwd()); 
 require $path."./assign.pm";
 
-my $in="assign  >>>  tmp_dina[  `DW_13*0+ : `DW_13]  > data_dly1                     - ram1_douta[`DW_13*0 +: `DW_13] ;
-assign tmp_dina[`DW_13*2+  :`DW_13]>= ram1_douta[`DW_13*1 +: `DW_13] - ram1_douta[`DW_13*2 +: `DW_13] ;
+my $in="assign  >>>  ( 1'b 1)tmp_dina[  `DW_13*0+ : `DW_13]  > {data_dly1}                    - ram1_douta[`DW_13*0 +: `DW_13] ;
+assign tmp_dina[`DW_13*2+  :`DW_13]>= ram1_doutxx [`DW_13*1 +: `DW_13] - ram1_douta[`DW_13*2 +: `DW_13] ;
 ";
 
 
@@ -22,9 +22,13 @@ my @OP_TXT_2=('>='   , '<='   ,  '&&'  , '||'     , '=='   ,  '!='  , '^~'    , 
 my @OP_REG_3=('<\s+<', '>\s+>', '=\s+=');
 my @OP_TXT_3=('<<'   , '>>'   , '=='   );
 
+#other non-operator RegEx
 #'+ :' => ' +: '
-my @OP_REG_666=('\+\s+:');
-my @OP_TXT_666=('+:'    );
+#JS:Jack Sparrow
+my @OP_REG_JS1=('\+\s+:', ';'  , '\(\s*', '\s*\)', '\[\s*', '\s*\]', '{\s*', '\s*}'    );
+my @OP_TXT_JS1=('+:'    , ' ; ', ' ('   , ') '   , ' ['   , '] '   , ' {'  , '} '   );
+my @OP_REG_JS2=('\(\s+\(', '\)\s+\)', '{\s+{', '}\s+}',                          );
+my @OP_TXT_JS2=('(('     , '))'     , '{{'   , '}}'   ,                    );
 
 my $SPACE=' ';
 
@@ -53,8 +57,8 @@ foreach my $line (@lines){
     }   
   #------------------------------------------------------------------------  
   $num = 0;
-  while ($num < scalar(@OP_REG_666)){
-      $line =~ s/$OP_REG_666[$num]/$OP_TXT_666[$num]/g;
+  while ($num < scalar(@OP_REG_JS1)){
+      $line =~ s/$OP_REG_JS1[$num]/$OP_TXT_JS1[$num]/g;
       ++$num;
     }  
   #------------------------------------------------------------------------ 

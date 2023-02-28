@@ -89,6 +89,8 @@ sub sum_align{
             next;
         }
         elsif ( $line =~ /^\s*assign\s+/){
+            ($cnt,@result) = assign::align_assign($cnt,@lines);
+            @output = (@output,@result);    
             #assign语句对齐
             #assign::head_assign(@output);
         }
