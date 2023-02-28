@@ -11,4 +11,5 @@ $NET_LEN = 6;
 @SQUARE_B=('\[','\]');
 #$SQUARE_B_LEN = xxx;
 
+
 1;

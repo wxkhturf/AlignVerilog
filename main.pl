@@ -5,6 +5,7 @@ use Cwd qw( getcwd abs_path);
 my $path = abs_path(getcwd()); 
 require $path."/module.pm";
 require $path."/note.pm";
+require $path."./assign.pm";
 
 
 
@@ -20,7 +21,7 @@ foreach $a (@all_files)
     my @lines = <FILETEMP>;
     close FILETEMP;
     open(FILEOUT,"> ./temp/$a");
-    #add user function
+    #add user function***************************************************
 
     my @cont;
     my %note_parall;
@@ -60,7 +61,7 @@ foreach $a (@all_files)
             $cont[$num] = $cont[$num].$value;
         }
 
-    #add user function
+    #add user function**********************************************
 
     foreach (@cont){
         print FILEOUT $_;
@@ -86,6 +87,10 @@ sub sum_align{
             $cnt = $end_cnt + 1;
             @output = (@output,@result);
             next;
+        }
+        elsif ( $line =~ /^\s*assign\s+/){
+            #assign语句对齐
+            #assign::head_assign(@output);
         }
         #   elsif($line =~/^((parameter)|(localparam)|(wire)|(reg)|(integer)|(real)|(genvar))\s+/){
         #       #变量声明语句的对齐
