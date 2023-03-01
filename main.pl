@@ -5,7 +5,7 @@ use Cwd qw( getcwd abs_path);
 my $path = abs_path(getcwd()); 
 require $path."/module.pm";
 require $path."/note.pm";
-require $path."./assign.pm";
+require $path."/assign.pm";
 
 
 

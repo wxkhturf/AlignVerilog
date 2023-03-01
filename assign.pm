@@ -7,7 +7,11 @@ sub align_assign{
     my @output;
     my $const_cnt2;
     ($const_cnt2,@output) = head_assign($const_cnt1, @lines);
-    @output             = spaceCtr_assign($const_cnt1, $const_cnt2, @output);
+    if($const_cnt2 - $const_cnt1 gt 1){
+        @output               = spaceCtr_assign(@output);
+    }else{
+        push(@output,$lines[$const_cnt1]);
+    }
 
     return ($const_cnt2,@output);
 }
@@ -23,8 +27,7 @@ sub head_assign{
         if($const_cnt2 - $const_cnt1 > 200){
             #防止内存爆炸
             last;
-        }
-        elsif( $line =~ /\s*assign\s+/){
+        }elsif( $line =~ /\s*assign\s+/){
             if ( $line =~ /^\s+assign\s+/){
                 my @tmp = split(" ",$line,1);
                 push(@output,$tmp[0]);
@@ -40,7 +43,8 @@ sub head_assign{
 }
 
 sub spaceCtr_assign{
-    (my $const_cnt1, my $const_cnt2, my @lines) = @_; 
+    #(my $const_cnt1, my $const_cnt2, my @lines) = @_; 
+    my @lines = @_; 
     my @output;
     my $cnt = $const_cnt1;
     
@@ -65,13 +69,15 @@ sub spaceCtr_assign{
     my $SPACE=' ';
 
     my $line='';
-    while($cnt >= $const_cnt1 and $cnt < $const_cnt2){
-        $line = $lines[$cnt];
+    my $num=0;
+    #while($cnt >= $const_cnt1 and $cnt < $const_cnt2){
+    foreach my $line (@lines){
+        #$line = $lines[$cnt];
         #------------------------------------------------------------------------
         #1 operator
         #先替换'>'和'=',之后再替换'>=',同时还有'<'和'<='
         #Verilog中'> ='会报错,必须写成'>=':see ./src/operators(Verilog-2005).png    
-        my $num = 0;
+        $num = 0;
         while ($num < scalar(@OP_REG_1)){
             $line =~ s/$OP_REG_1[$num]/$SPACE$OP_TXT_1[$num]$SPACE/g;
             ++$num;
@@ -96,7 +102,7 @@ sub spaceCtr_assign{
             }  
         #------------------------------------------------------------------------ 
         push(@output,$line."\n");
-        ++ $cnt;
+        #++ $cnt;
     }
     return @output;
 }
