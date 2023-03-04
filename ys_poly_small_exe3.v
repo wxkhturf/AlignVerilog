@@ -35,29 +35,9 @@ wire   [`DW_13-1:0]        tmp       ;
 
 
 
-assign tmp = -ram1_douta[`DW_13*0 +: `DW_13];
-
-
-always@(posedge clk) data_dly1        <= ram2_dinb[`DW_13*3 +: `DW_13]        ;
-
-assign tmp_dina[`DW_13*0 +: `DW_13]  = data_dly1                      - ram1_douta[`DW_13*0 +: `DW_13] ;
-assign tmp_dina[`DW_13*1 +: `DW_13]  = ram1_douta[`DW_13*0 +: `DW_13] - ram1_douta[`DW_13*1 +: `DW_13] ;
-assign tmp_dina[`DW_13*2 +: `DW_13]  = ram1_douta[`DW_13*1 +: `DW_13] - ram1_douta[`DW_13*2 +: `DW_13] ;
-assign tmp_dina[`DW_13*3 +: `DW_13]  =    ram1_douta[`DW_13*2 +: `DW_13] - ram1_douta[`DW_13*3 +: `DW_13] ;
-assign tmp_dinb[`DW_13*0 +: `DW_13]  = ram1_douta[`DW_13*3 +: `DW_13] - ram1_doutb[`DW_13*0 +: `DW_13] ;
-assign tmp_dinb[`DW_13*1 +: `DW_13] = ram1_doutb[`DW_13*0 +: `DW_13] - ram1_doutb[`DW_13*1 +: `DW_13] ;
-assign tmp_dinb[`DW_13*2 +: `DW_13]  =  ram1_doutb[`DW_13*1 +: `DW_13] - ram1_doutb[`DW_13*2 +: `DW_13] ;
-assign tmp_dinb[`DW_13*3 +: `DW_13] = ram1_doutb[`DW_13*2 +: `DW_13] - ram1_doutb[`DW_13*3 +: `DW_13] ;
-
 assign ram2_dina[`DW_13*0 +: `DW_13]  = f_ctr ? {tmp_dina[`DW_13*0 +: `DW_13] , 1'b0} + tmp_dina[`DW_13*0 +: `DW_13] 
                                             : {tmp , 1'b0} + tmp                                             ;
 assign ram2_dina[`DW_13*1 +: `DW_13]  = {tmp_dina[`DW_13*1 +: `DW_13] , 1'b0} + tmp_dina[`DW_13*1 +: `DW_13] ;
-assign ram2_dina[`DW_13*2 +: `DW_13]  = {tmp_dina[`DW_13*2 +: `DW_13] , 1'b0} + tmp_dina[`DW_13*2 +: `DW_13] ;
-assign ram2_dina[`DW_13*3 +: `DW_13]  = {tmp_dina[`DW_13*3 +: `DW_13] , 1'b0} + tmp_dina[`DW_13*3 +: `DW_13] ;
-assign ram2_dinb[`DW_13*0 +: `DW_13]  = {tmp_dinb[`DW_13*0 +: `DW_13] , 1'b0} + tmp_dinb[`DW_13*0 +: `DW_13] ;
-assign ram2_dinb[`DW_13*1 +: `DW_13]  = {tmp_dinb[`DW_13*1 +: `DW_13] , 1'b0} + tmp_dinb[`DW_13*1 +: `DW_13] ;
-assign ram2_dinb[`DW_13*2 +: `DW_13]  = {tmp_dinb[`DW_13*2 +: `DW_13] , 1'b0} + tmp_dinb[`DW_13*2 +: `DW_13] ;
-assign ram2_dinb[`DW_13*3 +: `DW_13]  = {tmp_dinb[`DW_13*3 +: `DW_13] , 1'b0} + tmp_dinb[`DW_13*3 +: `DW_13] ;
 
 
 

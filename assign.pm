@@ -6,15 +6,59 @@ sub align_assign{
     (my $const_cnt1 , my @lines)  = @_;
     my @output;
     my $const_cnt2;
+    my @result;
+    #***************************************************************
+    #1.扫描assign语句,得到($const_cnt1,$const_cnt2]长度的assign语句
+    #2.得到每列的最大长度
     ($const_cnt2,@output) = head_assign($const_cnt1, @lines);
     if($const_cnt2 - $const_cnt1 ne 1){
         @output    = spaceCtr_assign(@output);
     }
-    #else{
-    #    push(@output,$lines[$const_cnt1]);
-    #}
+    my @len = get_length(@output);
+    #print @len;
+    #print "\n";
+    #****************************************************************
+    #有了存储assign语句：@output
+    #有了每列的最大长度：@len
+    #下面开始执行对齐操作
+    my $out_line;
+    my $cnt;
+    my @temp;
+    my $WORDS_SPACE=2;
+    while(my $line = shift(@output)){
+        #print $line."\n";
+        $cnt = 0;
+        #print "uuuuu".$line."kkkkkk\n";
+        #去除前导和拖尾空格,是为了split(\s),因为去了才能方便计数
+        $line =~ s/^\s+|\s+$//g ;
 
-    return ($const_cnt2,@output);
+        @temp = split(/\s+/, $line);
+
+
+        $out_line = shift(@temp);
+        if($out_line =~ /[^(assign)]/){
+            unshift(@temp, $out_line);
+            $out_line=' 'x8;
+        }else{
+            $out_line = $out_line . ' ';
+        }
+        
+        while (my $word = shift(@temp)) {
+            next if($word =~ /^\s*$/);
+            $out_line = $out_line . $word . ' 'x($len[$cnt] - length($word)) . ' 'x$WORDS_SPACE ;
+            ++ $cnt;
+        }
+        $out_line = $out_line . "\n";
+        print $out_line;
+        push(@result,$out_line);
+        #print $out_line."\n";
+        #print(@temp);
+        #print("\n");
+    }
+
+    #****************************************************************
+
+    return ($const_cnt2-1,@result);
 }
 
 #将"assign"单词置于行首,接着对assign语句进行对齐，其余部分直接原封不动地返回
@@ -31,7 +75,7 @@ sub head_assign{
             last;
         }elsif( $line =~ /\s*assign\s+/){
             if ( $line =~ /^\s+assign\s+/){
-                my @tmp = split(" ",$line,1);
+                my @tmp = split(/\s+/,$line,1);
                 push(@output,$tmp[0]);
             }else{
                 push(@output,$line);
@@ -46,7 +90,7 @@ sub head_assign{
             push(@output,$line);    #如果不是以分号结尾,说明assign语句尚未结束,仍需要继续判断
             $semicolon_flag = 0 if( $line =~ /.*;\s*$/);
         }else{
-            push(@output,$line);
+            #push(@output,$line);
             last;
         }
         ++ $const_cnt2;
@@ -74,8 +118,8 @@ sub spaceCtr_assign{
     #JS:Jack Sparrow
     my @OP_REG_JS1=('\+\s+:', ';'  , '\(\s*', '\s*\)', '\[\s*', '\s*\]', '{\s*', '\s*}'    );
     my @OP_TXT_JS1=('+:'    , ' ; ', ' ('   , ') '   , ' ['   , '] '   , ' {'  , '} '   );
-    my @OP_REG_JS2=('\(\s+\(', '\)\s+\)', '{\s+{', '}\s+}',                          );
-    my @OP_TXT_JS2=('(('     , '))'     , '{{'   , '}}'   ,                    );
+    my @OP_REG_JS2=('\(\s+\(', '\)\s+\)', '{\s+{', '}\s+}',  ';');
+    my @OP_TXT_JS2=('(('     , '))'     , '{{'   , '}}'   ,  ' ;');
     my $SPACE=' ';
 
     #while($cnt >= $const_cnt1 and $cnt < $const_cnt2){
@@ -108,8 +152,14 @@ sub spaceCtr_assign{
             $line =~ s/$OP_REG_JS1[$num]/$OP_TXT_JS1[$num]/g;
             ++$num;
             }  
+        #------------------------------------------------------------------------  
+        $num = 0;
+        while ($num < scalar(@OP_REG_JS2)){
+            $line =~ s/$OP_REG_JS2[$num]/$OP_TXT_JS2[$num]/g;
+            ++$num;
+            }  
         #------------------------------------------------------------------------ 
-        print $line;
+        #print $line;
         push(@output,$line);
     }
     return @output;
@@ -119,9 +169,8 @@ sub spaceCtr_assign{
 
 
 #扫描第一遍
-sub scan_assign{
+sub get_length{
     my @lines  = @_;
-    my @output;
     my $SPACE=' ';
     #***********************************************
     #simple example: assign a = b ;
@@ -129,8 +178,9 @@ sub scan_assign{
     #"assign"、"=" and ";" always occupy same space
     #***********************************************
     my $column = 2;
-    my @length;
+    my @len;
     my @temp;
+
     foreach $line (@lines){
         if($line =~ /^\s+$/ ){
             next;
@@ -138,15 +188,29 @@ sub scan_assign{
         #去除前导和拖尾空格,是为了split(\s),因为去了才能方便计数
         $line =~ s/^\s+|\s+$//g ;
 
-        @temp = split(/\s/, $line);
-        
+        @temp = split(/\s+/, $line);
+        my $cnt = 0;
+        if($temp[0] =~ /^assign$/ ){
+            #$cnt = 1;
+            shift(@temp);
+        }else{
+            #$cnt = 0;
+        }
+        while (my $word = shift(@temp)) {
+            next if($word =~ /^\s*$/);
+            if($cnt == scalar(@len)){
+                #print length($word)."\n";
+                push(@len,length($word));
+            }else{
+                $len[$cnt] = length($word) if(length($word) > $len[$cnt]);
+            }
+            ++ $cnt;
+        }
     }
-
-    }
+    print @len;
+    print "\n";
+    return @len;
 }
-
-
-
 
 
 1;

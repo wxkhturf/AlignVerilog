@@ -1,17 +1,19 @@
 my @length;
 
-my $line = " j a";
+my $line = " assijgn ";
 $line =~ s/^\s+|\s+$//g ;
 my @temp = split(/\s/,$line);
 
 
 
 
-my $cnt = 0;
-while ($cnt < scalar(@temp)){
-	if()
+# my $cnt = 0;
+# if($temp[$cnt] =~ /^assig$/  ){
+# 	print "shit\n";
+# 	print $temp[$cnt];
+# }
+#print(scalar(@temp));
 
-
-	++ $cnt;
+if($temp[0] =~ /[^(assign)]/ ){
+	print "shit\n$temp[0]\n";
 }
- 
