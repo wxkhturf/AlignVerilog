@@ -2,7 +2,7 @@
 
 package assign;
 
-my $lines_threshold = 2;
+my $lines_threshold = 200;
 
 sub align_assign{    
     (my $const_cnt1 , my @lines)  = @_;
