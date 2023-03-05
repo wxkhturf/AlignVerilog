@@ -2,6 +2,8 @@
 
 package assign;
 
+my $lines_threshold = 2;
+
 sub align_assign{    
     (my $const_cnt1 , my @lines)  = @_;
     my @output;
@@ -58,7 +60,7 @@ sub head_assign{
     while($const_cnt2 < scalar(@lines)){
         my $line = $lines[$const_cnt2];
         #因为是先进行左顶格对齐,后匹配"assign",故只用匹配"空格+assign"就行了
-        if($const_cnt2 - $const_cnt1 > 200){
+        if($const_cnt2 - $const_cnt1 > $lines_threshold){
             #防止内存爆炸
             last;
         }elsif( $line =~ /\s*assign\s+/){
