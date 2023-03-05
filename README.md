@@ -247,5 +247,67 @@ if-else
 >5. reg
 >6. wire
 
+# 附录
 
+## 2.1 error log
+
+1. shift：
+
+   ```perl
+   #while (my $word = shift(@temp)) {
+   foreach my $word (@temp) {
+   ```
+
+   写成`shfit`的时候，不知道为何`$word`变量不全，不会遍历所有的`@temp`。后来写成非`shift`的形式才解决。具体如下：
+
+   ```perl
+   my $line = "assign ram2_dina [`DW_13 * 0     +: `DW_13] = f_ctr ? {tmp_dina [`DW_13 * 0 +: `DW_13] , 1'b0} + tmp_dina [`DW_13 * 0 +: `DW_13] :         {tmp    , 1'b0} + tmp ; ";
+   
+   
+   my @temp = split(/\s+/, $line);
+   my $cnt = 0;
+   if($temp[0] =~ /^assign$/ ){
+       #$cnt = 1;
+       shift(@temp);
+   }else{
+       #$cnt = 0;
+   }
+   
+   
+   print "-"x30;
+   print "\nnot-shift:\n";
+   print "-"x30;
+   print "\n";
+   foreach my $word (@temp) {
+       if($cnt == scalar(@len)){
+           #print length($word)."\n";
+           push(@len,length($word));
+       }else{
+           $len[$cnt] = length($word) if(length($word) > $len[$cnt]);
+       }
+       ++ $cnt;
+       print $word . "\n";
+   }
+   print "-"x30;
+   print "\nshift:\n";
+   print "-"x30;
+   print "\n";
+   while (my $word = shift(@temp)) {
+   
+       if($cnt == scalar(@len)){
+           #print length($word)."\n";
+           push(@len,length($word));
+       }else{
+           $len[$cnt] = length($word) if(length($word) > $len[$cnt]);
+       }
+       ++ $cnt;
+       print $word . "\n";
+   }
+   ```
+
+   `shift`和`not-shift`打印的结果不一样！
+
+   ![win10-terminal-print-(not)shift](src/win10-terminal-print-(not)shift.png)
+
+2. 
 

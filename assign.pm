@@ -22,34 +22,51 @@ sub align_assign{
     #有了每列的最大长度：@len
     #下面开始执行对齐操作
     my $out_line;
-    my $cnt;
     my @temp;
-    my $WORDS_SPACE=2;
-    while(my $line = shift(@output)){
+    my $WORDS_SPACE=1;
+    #while(my $line = shift(@output)){
+    foreach my $line (@output){
+        next if($line =~ /^\s+$/);
         #print $line."\n";
-        $cnt = 0;
+
         #print "uuuuu".$line."kkkkkk\n";
         #去除前导和拖尾空格,是为了split(\s),因为去了才能方便计数
         $line =~ s/^\s+|\s+$//g ;
 
         @temp = split(/\s+/, $line);
-
-
-        $out_line = shift(@temp);
-        if($out_line =~ /[^(assign)]/){
-            unshift(@temp, $out_line);
-            $out_line=' 'x8;
+        my $cnt = 0;
+        if($temp[0] =~ /^assign$/){
+            $out_line = shift(@temp).' ';
         }else{
-            $out_line = $out_line . ' ';
+            $out_line = ' 'x8;
         }
-        
-        while (my $word = shift(@temp)) {
-            next if($word =~ /^\s*$/);
+
+
+        # $out_line = shift(@temp);
+        # if($out_line =~ /[^(assign)]/){
+        #     unshift(@temp, $out_line);
+        #     $out_line=' 'x8;
+        # }else{
+        #     $out_line = $out_line . ' ';
+        # }
+
+        #print @temp;
+        # while (my $word = shift(@temp)) {
+        #     next if($word =~ /^\s*$/);
+        #     $out_line = $out_line . $word . ' 'x($len[$cnt] - length($word)) . ' 'x$WORDS_SPACE ;
+        #     ++ $cnt;
+        # }
+        foreach my $word (@temp){
+            #next if($word =~ /^\s*$/);
+            # print ">>>" . $word . "<<<\t\t";
+            #print ">>>" . $len[$cnt]."<<<\t";
+            #print ">>>" . length($word)."<<<\n";
+            #$out_line = $out_line . $word . ' 'x$WORDS_SPACE ;
             $out_line = $out_line . $word . ' 'x($len[$cnt] - length($word)) . ' 'x$WORDS_SPACE ;
             ++ $cnt;
         }
         $out_line = $out_line . "\n";
-        print $out_line;
+        #print $out_line;
         push(@result,$out_line);
         #print $out_line."\n";
         #print(@temp);
@@ -181,7 +198,7 @@ sub get_length{
     my @len;
     my @temp;
 
-    foreach $line (@lines){
+    foreach my $line (@lines){
         if($line =~ /^\s+$/ ){
             next;
         }
@@ -196,8 +213,10 @@ sub get_length{
         }else{
             #$cnt = 0;
         }
-        while (my $word = shift(@temp)) {
-            next if($word =~ /^\s*$/);
+        print "-"x12;
+        #rint @temp;
+        #while (my $word = shift(@temp)) {
+        foreach my $word (@temp) {
             if($cnt == scalar(@len)){
                 #print length($word)."\n";
                 push(@len,length($word));
@@ -205,10 +224,12 @@ sub get_length{
                 $len[$cnt] = length($word) if(length($word) > $len[$cnt]);
             }
             ++ $cnt;
+            print $word . "\n";
+
         }
     }
-    print @len;
-    print "\n";
+    #print @len;
+    #print "\n";
     return @len;
 }
 
