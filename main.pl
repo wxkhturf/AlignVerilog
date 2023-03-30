@@ -6,6 +6,8 @@ my $path = abs_path(getcwd());
 require $path."/module.pm";
 require $path."/note.pm";
 require $path."/assign.pm";
+require $path."/decl.pm";
+require $path."/symbol.pm";
 
 
 
@@ -53,11 +55,13 @@ foreach $a (@all_files)
             chomp($tmp);
             #print $num."\t".$value."\n";
             $tmp =~s/ +$//g;
-            $cont[$num] = $tmp .'//' . $value;
+            chomp($value);
+            $cont[$num] = $tmp ."\n".'//' . $value;
         }
         #加上"/**/"型注释
         while(my ($num,$value) = each (%note_2)){
             #print $num."\t".$value."\n";
+            #chomp($value);
             $cont[$num] = $cont[$num].$value;
         }
 
@@ -87,13 +91,17 @@ sub sum_align{
             $cnt = $end_cnt + 1;
             @output = (@output,@result);
             next;
-        }
-        elsif ( $line =~ /^\s*assign\s+/){
+        } elsif ( $line =~ /^\s*assign\s+/){
             ($cnt,@result) = assign::align_assign($cnt,@lines);
             @output = (@output,@result);    
             #assign语句对齐
             #assign::head_assign(@output);
+        #} elsif( $line =~ /^\s*$symbol::DECL_WORDS\s+/){
+        } elsif( $line =~ /^\s*$symbol::DECL_REGEX(\s+|\[)/){
+            ($cnt,@result) = declaration::align_decl($cnt,@lines);
+            @output = (@output,@result);    
         }
+
         #   elsif($line =~/^((parameter)|(localparam)|(wire)|(reg)|(integer)|(real)|(genvar))\s+/){
         #       #变量声明语句的对齐
         #   }elsif($line =~/^((always)|(initial)|(for)|(generate))\s+/){

@@ -1,6 +1,6 @@
 #!usr/bin/perl
 
-package decl;
+package declaration;
 
 my $lines_threshold = 200;
 
@@ -32,7 +32,7 @@ sub align_decl{
         my $cnt = 0;
         if($temp[0] =~ /^$symbol::DECL_REGEX$/){
             $out_line = shift(@temp);
-            $out_line = $out_line.' 'x$decl_len;
+            $out_line = $out_line.' 'x($decl_len-length($out_line));
             $out_line = $out_line.' ';
         }else{
             $out_line = ' 'x$decl_len;
@@ -63,8 +63,8 @@ sub head_decl{
         if($const_cnt2 - $const_cnt1 > $lines_threshold){
             #防止内存爆炸
             last;
-        }elsif( $line =~ /\s*$symbol::DECL_REGEX\s+/){
-            if ( $line =~ /^\s+$symbol::DECL_REGEX\s+/){
+        }elsif( $line =~ /\s*$symbol::DECL_REGEX(\s+|\[)/){
+            if ( $line =~ /^\s+$symbol::DECL_REGEX(\s+|\[)/){
                 my @tmp = split(/\s+/,$line,1);
                 push(@output,$tmp[0]);
             }else{
@@ -180,6 +180,7 @@ sub get_length{
         @temp = split(/\s+/, $line);
         my $cnt = 0;
         if($temp[0] =~ /^$symbol::DECL_REGEX$/ ){
+            #print $temp[0]."\n";
             $decl_len = length($temp[0]) if(length($temp[0]) > $decl_len);
             shift(@temp);
         }
@@ -191,7 +192,7 @@ sub get_length{
                 $len[$cnt] = length($word) if(length($word) > $len[$cnt]);
             }
             ++ $cnt;
-            print $word . "\n";
+            #print $word . "\n";
         }
     }
     return ($decl_len,@len);

@@ -186,7 +186,7 @@ sub get_length{
         }else{
             #$cnt = 0;
         }
-        print "-"x12;
+        #print "-"x12;
         foreach my $word (@temp) {
             if($cnt == scalar(@len)){
                 push(@len,length($word));
@@ -194,7 +194,7 @@ sub get_length{
                 $len[$cnt] = length($word) if(length($word) > $len[$cnt]);
             }
             ++ $cnt;
-            print $word . "\n";
+            #print $word . "\n";
 
         }
     }
