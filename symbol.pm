@@ -12,6 +12,7 @@ $NET_LEN = 6;
 #$SQUARE_B_LEN = xxx;
 #**************************************************************************************
 #用于declaration检测
+
 @DECL_WORDS=('parameter','localparam','input','output',
               'reg','wire','integer','real','logic','bit',
               'int');
@@ -26,6 +27,13 @@ foreach my $word (@DECL_WORDS){
 }
 $DECL_REGEX = '('.$DECL_REGEX.')';
 #***********************************************************
+#***************************************************************************************
+#用于block检测:如always/forever/initial等
+
+
+#正则字符串
+@BLOCK_BOUNDRY_START = ('if', 'begin'); 
+@BLOCK_BOUNDRY_END   = ('else', 'end');
 #***************************************************************************************
 
 

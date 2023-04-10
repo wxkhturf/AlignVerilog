@@ -312,34 +312,60 @@ declaration，即声明部分。
 >
 >2. 关于variables
 >
->  1. `*`
->  2. `var1 or var2 or var3`
->  3. `posedge/negedge var or `
+> 1. `*`
+> 2. `var1 or var2 or var3`
+> 3. `posedge/negedge var or `
 >
->  这个很简单，把`*`也看作是一个单词，这样的话，variables中的所有内容都是单词，统一规定单词与单词之间有`1个空格`
+> 这个很简单，把`*`也看作是一个单词，这样的话，variables中的所有内容都是单词，统一规定单词与单词之间有`1个空格`
 >
 >3. 如果`always`头后的部分，按`begin--end`依次顺序对齐（*注：这一部分应当是一个通用型模块，即对`initial、generate、for等块语句可以尽可能调用`*）
 >
 >4. 认为`always`和`#`、`@(xxxx)`必定在同一行，例如：
 >
->   ```verilog
->   always@(posedge clk or negedge rst_n)
->   
->   always@(posedge clk or negedge rst_n) begin
->   ```
+>  ```verilog
+>  always@(posedge clk or negedge rst_n)
 >
->   对于写成下面的的形式则不予处理，因为认为`)`必定和`always`同行
+>  always@(posedge clk or negedge rst_n) begin
+>  ```
 >
->   ```verilog
->   always@(posedge clk
->          or negedge rst_n)
->   
->       
->   always@(posedge clk
->           or negedge rst_n)begin
->   ```
+>  对于写成下面的的形式则不予处理，因为认为`)`必定和`always`同行
+>
+>  ```verilog
+>  always@(posedge clk
+>         or negedge rst_n)
+>
+>
+>  always@(posedge clk
+>          or negedge rst_n)begin
+>  ```
 >
 >3. 对于`always`块中的关键词，只考虑：`if-else`、`begin-end`、`case-endcase`。如果还需要考虑其他关键词，请反馈给我。
+>
+>4. 对于中间的`else if`，认为`else`和`if`必定同行，如果不同行那是你的写法有问题
+>
+>   ```verilog
+>   if xxx
+>   else if xxx
+>   else
+>   ```
+>
+>5. 经本人观察，`always`语句，必定以`end`或`;`结束
+>
+>6. 认为一个`always`的结束和另一个`always`的开始不会在同一行，即不会出现`end`与`always`同行。
+>
+>   ```verilog
+>   always @(xxx)begin
+>   end always@(xxx)
+>       ...
+>   ```
+>
+>7. 认为不会存在2个`always`同行：建议还是不要这样写吧，虽说也不过分，但是本脚本对此不考虑
+>
+>   ```verilog
+>   always xxxx; always xxx;
+>   ```
+>
+>8. 
 
 
 
@@ -358,7 +384,8 @@ declaration，即声明部分。
 
 ### 1.4.3 代码部分
 
-
+> 1. 需要注意的是可以只有`if`没有`else`，但是有`begin`一定会有`end`
+> 2. 
 
 # 附录
 
