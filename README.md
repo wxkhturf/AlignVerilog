@@ -365,7 +365,7 @@ declaration，即声明部分。
 >   always xxxx; always xxx;
 >   ```
 >
->8. 
+>8. <u>因为`always`可以只有`if`没有`else`，因此当`if`后面**3**行，全是空行，或后面3行有语句，但是不是`else`启始时，认为与该`if`匹配的`else`不存在。</u>
 
 
 
@@ -376,7 +376,7 @@ declaration，即声明部分。
 >1. `always`过程块对齐方式基本思想和`assign`一样，以空格为分界将“单词”进行拼接与分割
 >2. 采用分级的方式，因为遇到`if`和`else if`等关键词则增加级别，直到遇到`end`标志`if--else if--else`块结束为止
 >3. 对于`begin--end`块，由于它通常与`if--else if--else`配合使用，或者标志`always`块的开始和结束，所以遇到`begin--end`块其级数理应不予处理，但是考虑`case`语句没有`if--else`，但是仍然需要增加级数，对此，进行识别，如果`begin`前面有`if`则不增加其级数，否则增加！
->4. 
+>4. 由于采用`if-else`、`begin-end`分级方式，因此只对齐连续的同级，且每增大一级，前导空格多4个空格
 
 
 
@@ -385,7 +385,34 @@ declaration，即声明部分。
 ### 1.4.3 代码部分
 
 > 1. 需要注意的是可以只有`if`没有`else`，但是有`begin`一定会有`end`
-> 2. 
+>
+> 2. 因为存在`always #5 clk = ~clk;`这种语句，因此，无法完全根据`if/else/begin/end`来判断always块的结束，这里采用以下方法：
+>
+>    设置一标志位用于标志是否检测到`begin-end`，（因为`always`语句，必定以`end`或`;`结束）。
+>
+>    - 若在前述匹配中没有检测到`begin-end`，且此时检测到`;`，则always块结束，
+>    - 若在前述匹配中检测到`begin-end`，则以`end`标志`begin-end`块结束，至于是否是always块结束，则需要进一步判断`if-else`、`case`等
+>
+> 3. 满足以下条件，可以判断该always块结束：
+>
+>    1. 没出现过if
+>    2. begin-end已匹配完毕，即：有1个begin，就有1个end
+>    3. case/casex/casez-endcase已匹配完毕
+>    4. 最后一句以分号结束
+
+### 1.4.4 代码部分2
+
+### 1.4.3 代码部分
+
+<font color=gree size=7>关于always块的边界检测，我发现只需要找到关键词即可，即以下一个关键词的开头，作为本always块的结尾，这些关键词有：</font>
+
+```verilog
+@THE_HEAD = (@DECL_WORDS,'assign','always','initial','forever','fork','endmodule');
+```
+
+
+
+
 
 # 附录
 
@@ -449,5 +476,20 @@ declaration，即声明部分。
 
    ![win10-terminal-print-(not)shift](src/win10-terminal-print-(not)shift.png)
 
-2. 
+2. 不要多次声明`my $tmp`：
+
+   ```perl
+    my $tmp = () = $line =~ /(^case|\scase)(\s|\()/g;
+       $cnt_ce = $cnt_ce + $tmp;
+       ##################################################
+       ##################################################
+       #end
+    #my $tmp = () = $line =~ /(^endcase|\sendcase)\s/g;   #这里不应该再声明,直接用
+         $tmp = () = $line =~ /(^endcase|\sendcase)\s/g;
+       $cnt_ce = $cnt_ce - $tmp;
+   ```
+
+   
+
+3. 
 
