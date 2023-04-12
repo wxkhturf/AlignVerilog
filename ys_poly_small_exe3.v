@@ -84,6 +84,7 @@ always@(posedge clk or negedge rst_n)
             functions <= functions; parameters <= parameters;
         end
     end
+    
 addr_ctr_poly   addr_ctr_poly(
                                     .clk(clk),
                                     .rst_n(rst_n),
@@ -104,6 +105,15 @@ addr_ctr_poly   addr_ctr_poly(
                                     .addr1(addr1_poly),
                                     .addr2(addr2_poly),
                                     .addr3(addr3_poly));    
+
+
+
+
+
+
+
+
+
 
 
 always@(*)

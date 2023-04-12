@@ -1,14 +1,13 @@
 #!usr/bin/perl
 
 package block;
-my $NO_ELSE = 3;#如果连续3行没有检测到else,则认为if结束
+#my $NO_ELSE = 3;#如果连续3行没有检测到else,则认为if结束
 
 sub align_block{    
     (my $const_cnt1 , my @lines)  = @_;
     my @output;
     my @result;
     my $const_cnt2;
-    my @result;
     #***************************************************************
     #1.扫描block语句,得到($const_cnt1,$const_cnt2]长度的block语句
     #2.得到每列的最大长度
@@ -18,27 +17,31 @@ sub align_block{
         @output    = spaceCtr_block(@output);
     }
     #得到层级数
-    my @level = get_level(@lines);
+    my @level = get_level(@output);
+    foreach my $shit(@output){
+        print $shit."";
+    }
     ###################################################################
     #开始对齐
     my $ll_begin = 0;
     my $ll_end = $ll_begin + 1;
-    my @tmp;
-    my $line_tmp;
+    #my $line_tmp;
 
-    while($ll_end < scalar(@level)){
-        if($ll_end == $scalar(@level)){
+    while($ll_begin < scalar(@level)){
+        if($ll_end == scalar(@level)){
             push(@result,$output[$ll_begin]);
             last;
         }else{
             ##############################################################################
             #不需要对齐
-            @tmp = ();#清空数组
-            $line_tmp = shift(@output);
-            push(@tmp,$line_tmp);
-            while( ($level[$ll_begin] eq $level[$ll_end]) and $ll_end ne $scalar(@level)){
-                $line_tmp = shift(@output);
-                push(@tmp,$line_tmp);
+            my @tmp = ();#清空数组
+            push(@tmp,$output[$ll_begin]);
+            while($ll_end ne scalar(@level)){
+                if($level[$ll_end] eq $level[$ll_end -1]){
+                    push(@tmp,$output[$ll_end]);
+                }else{
+                    last;
+                }
                 ++ $ll_end;
             }
             ###############################################################################
@@ -46,24 +49,45 @@ sub align_block{
             ###############################################################################
             #需要对齐
             if( ($ll_end - $ll_begin) eq 1){
-                push(@result,$line_tmp);
+                push(@result,@tmp);
             }else{
-                push(@result,part_align(@tmp));
+                #push(@result,part_align(@tmp));
+                #print "6"x90;
+                #print "\n";
+                #print @tmp;
+                ##my @shit = part_align(@tmp);
+                ##print @shit;
+                #print "9"x90;
+                #print "\n";
+
+                push(@result, part_align(@tmp));
             }
-            $ll_begin = $ll_end;
-            $ll_end = $ll_end + 1;
             ###############################################################################
         }
+        $ll_begin = $ll_end;
+        $ll_end = $ll_end + 1;
     }
+         
+
+
     #######################################################################################
     #添加前导空格
-    my $ll_cnt = 0;
-    while($ll_cnt < scalar(@level)){
-        $result[$ll_cnt] = " "x$level[$ll_cnt] . $result[$ll_cnt];
+    
+    $ll_cnt = 0;
+
+    while($ll_cnt < scalar(@result)){
+        if($result[$ll_cnt] !~ /^\s*$/){
+            $result[$ll_cnt] =~ s/^\s+//g ;
+            $result[$ll_cnt] = '    'x($level[$ll_cnt]+1) . $result[$ll_cnt];
+        }
         ++ $ll_cnt;
     }
     #****************************************************************
-    return ($const_cnt2-1,@result);#关于这里要不要减1,有待商榷
+    #去除第1句的前导空格
+    $line_tmp = $result[0];
+    $line_tmp =~ s/^\s+//g ;
+    $result[0] = $line_tmp;
+    return ($const_cnt2,@result);#关于这里要不要减1,有待商榷
 }
 
 ##############################################################################
@@ -76,13 +100,18 @@ sub part_align{
     my $out_line;
     my @temp;
     my $WORDS_SPACE=1;
+    my $cnt = 0;
     foreach my $line (@lines){
-        next if($line =~ /^\s+$/);
+        #print $line."\n";
+        if($line =~ /^\s*$/){
+            push(@output,$line);
+            next;
+        };
         #去除前导和拖尾空格,是为了split(\s),因为去了才能方便计数
         $line =~ s/^\s+|\s+$//g ;
         @temp = split(/\s+/, $line);
-        my $cnt = 0;
-        my $out_line = '';
+        $cnt = 0;
+        $out_line = '';
 
         foreach my $word (@temp){
             $out_line = $out_line . $word . ' 'x($len[$cnt] - length($word)) . ' 'x$WORDS_SPACE ;
@@ -90,11 +119,12 @@ sub part_align{
             ++ $cnt;
         }
         $out_line = $out_line . "\n";
+        #print $out_line."ppppppppp";
         push(@output,$out_line);
     }
     return(@output);
-
 }
+
 sub get_length{
     my @lines = @_;
     my @len;
@@ -114,6 +144,7 @@ sub get_length{
     }
     return @len;
 }
+
 ##############################################################################
 #level
 sub get_level{
@@ -128,6 +159,46 @@ sub get_level{
         $cnt_level =level_cal($cnt_level, $line);
         push(@level,$cnt_level);
     }
+    #####################################################################
+    #更新层级
+    #为了更好地对齐！
+    my $ll_cnt = scalar(@level);
+    while($ll_cnt >0){
+        if(($ll_cnt gt 0) and ($level[$ll_cnt] gt $level[$ll_cnt-1])){
+                $level[$ll_cnt] = $level[$ll_cnt-1];
+        }
+        -- $ll_cnt;
+    }
+    #####################################################################
+    #为了更好地对齐
+    $ll_cnt = 0;
+    while($ll_cnt < scalar(@level)){
+        $line = $lines[$ll_cnt];
+
+        
+        if($line =~ /(^\s*|\s)(end|endcase)\s/){
+            if($line =~ /^\s*(end|endcase)\s*$/){
+            }elsif($line =~ /\s(end|endcase)\s*$/){
+                if(0 ne (level_cal_begin(0,$line) + level_cal_case(0,$line))){
+                    $level[$ll_cnt] = $level[$ll_cnt]+1;
+                }
+            }
+        }
+
+        ###############################################
+        my $tmp1 = () = $line =~ /\sif\s/g;
+        $tmp1 = $tmp1 + (() = $line =~ /^if\s/g);
+        my $tmp2 = () = $line =~ /\selse\s/g;
+        $tmp2 = $tmp2 + (() = $line =~ /^else\s/g);
+        if((0 ne $tmp1) and ($tmp1 eq $tmp2)){
+            $level[$ll_cnt] = $level[$ll_cnt] -1;
+        }
+        ###############################################
+        ++ $ll_cnt;
+    }
+    #####################################################################
+    #为了更好地对齐
+
     return @level;
 }
 
@@ -209,12 +280,14 @@ sub head_block{
     #my @END_FLAG = (';','end');
     my @output;
     my $const_cnt2 = $const_cnt1;
+    #my $const_cnt2 = 0; 
     my $begin_cnt = 0;
     my $case_cnt = 0;
     my $if_cnt = 0;
     my $if_appeared = 0;#如果出现过if,则置为1
     while($const_cnt2 < scalar(@lines)){
         my $line = $lines[$const_cnt2];
+        #print $line."\tuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu\n";
         #begin-end计数
         $begin_cnt = level_cal_begin($begin_cnt,$line);
         #case/casex/casez-endcase计数
@@ -244,9 +317,14 @@ sub head_block{
             }
             push(@output,$line);
         }else{
+            foreach my $head (@symbol::THE_HEAD){
+                if($line =~ /(^\s*|\s)$head\s/){
+                    -- $const_2;
+                    return ($const_cnt2,@output);
+                } 
+            }
             push(@output,$line);
         }
-
         ++ $const_cnt2;
     }
     return ($const_cnt2,@output);
@@ -275,8 +353,8 @@ sub spaceCtr_block{
     my @OP_REG_JS2=('\(\s+\(', '\)\s+\)', '{\s+{', '}\s+}',  ';');
     my @OP_TXT_JS2=('(('     , '))'     , '{{'   , '}}'   ,  ' ;');
 
-    my @always_REG_JS3=('\s*always\s*@','\s*always\s*#')
-    my @always_TXT_JS3=('always@ '     ,'always# ')
+    my @always_REG_JS3=('\s*always\s*@','\s*always\s*#','@\s+');
+    my @always_TXT_JS3=('always@ '     ,'always# '     ,'@');
 
     my $SPACE=' ';
 
@@ -292,6 +370,8 @@ sub spaceCtr_block{
             $line =~ s/$OP_REG_1[$num]/$SPACE$OP_TXT_1[$num]$SPACE/g;
             ++$num;
             }  
+        #单独考虑"!"
+        $line =~ s/!\s+/!/g;
         #------------------------------------------------------------------------
         $num = 0;
         while ($num < scalar(@OP_REG_2)){

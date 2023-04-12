@@ -123,7 +123,9 @@ sub spaceCtr_assign{
         while ($num < scalar(@OP_REG_1)){
             $line =~ s/$OP_REG_1[$num]/$SPACE$OP_TXT_1[$num]$SPACE/g;
             ++$num;
-            }  
+            } 
+        #单独考虑"!"
+        $line =~ s/!\s+/!/g; 
         #------------------------------------------------------------------------
         $num = 0;
         while ($num < scalar(@OP_REG_2)){

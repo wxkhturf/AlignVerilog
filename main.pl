@@ -7,6 +7,7 @@ require $path."/module.pm";
 require $path."/note.pm";
 require $path."/assign.pm";
 require $path."/decl.pm";
+require $path."/block.pm";
 require $path."/symbol.pm";
 
 
@@ -83,7 +84,9 @@ sub sum_align{
     my @result;
     while($cnt < scalar(@lines)){
         my $line = $lines[$cnt];
-        if($line =~ /^module[\s\(]+/){
+        if($line =~ /^\s*$/){
+            push(@output,$line);
+        } elsif($line =~ /^module[\s\(]+/){
             #module块的对齐
             $const_cnt = $cnt;
             my ($flag, $len_sb, $len_var) = module::scan_module($const_cnt,@lines);
@@ -99,6 +102,9 @@ sub sum_align{
         #} elsif( $line =~ /^\s*$symbol::DECL_WORDS\s+/){
         } elsif( $line =~ /^\s*$symbol::DECL_REGEX(\s+|\[)/){
             ($cnt,@result) = declaration::align_decl($cnt,@lines);
+            @output = (@output,@result);    
+        } elsif($line =~ /^\s*always(\s+|@|#|\()/){
+            ($cnt,@result) = block::align_block($cnt,@lines);
             @output = (@output,@result);    
         }
 
