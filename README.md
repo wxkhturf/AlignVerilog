@@ -1,3 +1,8 @@
+# 运行方式
+1. 依赖：perl 5
+2. 将.v文件添加进file_list
+3. 执行prompt> perl main.pl
+
 # 前言
 
 我在尝试将Verilog文件进行格式对齐，<u>目前仅实现了module声明部分的对齐，后续将会持续更新。</u>
