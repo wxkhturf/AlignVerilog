@@ -1,4 +1,9 @@
+# 致谢
+
+1. 感谢传斌成为第1位内测用户！
+
 # 运行方式
+
 1. 依赖：perl 5
 2. 将.v文件添加进file_list
 3. 执行prompt> perl main.pl

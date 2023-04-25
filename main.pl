@@ -106,6 +106,9 @@ sub sum_align{
         } elsif($line =~ /^\s*always(\s*|@|#|\()/){
             ($cnt,@result) = block::align_block($cnt,@lines);
             @output = (@output,@result);    
+        } elsif($line =~ /^\s*endmodule\s+/){
+            $line =~ s/^\s+//g ;
+            push(@output,$line);
         }
 
         #   elsif($line =~/^((parameter)|(localparam)|(wire)|(reg)|(integer)|(real)|(genvar))\s+/){

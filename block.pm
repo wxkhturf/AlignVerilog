@@ -18,6 +18,7 @@ sub align_block{
     }
     #得到层级数
     my @level = get_level(@output);
+    
     #foreach my $shit(@output){
     #    print $shit."";
     #}
@@ -203,7 +204,18 @@ sub get_level{
     }
     #####################################################################
     #为了更好地对齐
+    $ll_cnt = 0;
+    while($ll_cnt < scalar(@level)){
+        $line = $lines[$ll_cnt];
 
+        my $tmp1 = level_cal_begin(0,$line);
+        my $tmp2 = level_cal_if(0,$line);
+        if( (($tmp1 + $tmp2) eq 0) and ($tmp1 ne 0)){
+            $level[$ll_cnt] = $level[$ll_cnt] -1;
+        }
+
+        ++ $ll_cnt;
+    }
     return @level;
 }
 
@@ -319,27 +331,6 @@ sub head_block{
         }
         #########################################################
         #以分号结束,并且没碰到过if,说明always块结束了
-            # if(0 == $if_appeared){
-            #     if(0 == $begin_cnt and 0 == $case_cnt){
-            #         push(@output,$line);
-            #         if($line =~ /;\s*$/)
-            #         {
-            #             last;
-            #         }
-            #     }else{
-            #         push(@output,$line);
-            #     }
-            # }elsif(0 == $begin_cnt and 0 == $case_cnt){
-            #     foreach my $head (@symbol::THE_HEAD){
-            #         if($line =~ /(^\s*|\s)$head\s/){
-            #             -- $const_cnt2;
-            #             return ($const_cnt2,@output);
-            #         } 
-            #     }
-            #     push(@output,$line);
-            # }else{
-            #     push(@output,$line);
-            # }
             if(0 == $if_appeared){
                 if(0 == $begin_cnt and 0 == $case_cnt){
                     push(@output,$line);
@@ -350,9 +341,25 @@ sub head_block{
                 }else{
                     push(@output,$line);
                 }
+            }elsif(0 == $begin_cnt and 0 == $case_cnt and 0 == $if_cnt){
+                push(@output,$line);
+                return ($const_cnt2,@output);    
             }else{
                 push(@output,$line);
             }
+            #if(0 == $if_appeared){
+            #    if(0 == $begin_cnt and 0 == $case_cnt){
+            #        push(@output,$line);
+            #        if($line =~ /;\s*$/)
+            #        {
+            #            last;
+            #        }
+            #    }else{
+            #        push(@output,$line);
+            #    }
+            #}else{
+            #    push(@output,$line);
+            #}
         #########################################################
         ++ $const_cnt2;
     }
