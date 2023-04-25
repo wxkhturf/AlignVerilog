@@ -231,9 +231,14 @@ sub align_module{
             if($len_sb){
                 foreach my $keywords (@symbol::SQUARE_B){
                     if($line =~ /$keywords/){
+                        print "qqqqqqqqqqqqqqqqqq\n";
+                        print $tmp[1];
+                        print "\nyyyyyyyyyyyyyyyyyyyy\n";
                         my @tmp2 = split(/$keywords/,$tmp[1]);
                         @tmp  = split(/$keywords/,$line);
-                        $square = '[' . $tmp2[0] . ']' . ' 'x($len_sb +2 - length($tmp2[0]));
+                        if('' ne $tmp2[0]){
+                            $square = '[' . $tmp2[0] . ']' . ' 'x($len_sb +2 - length($tmp2[0]));
+                        }        
                     }else{
                         $square = ' 'x($len_sb + 2 + 2);
                         last;

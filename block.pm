@@ -87,6 +87,8 @@ sub align_block{
     $line_tmp = $result[0];
     $line_tmp =~ s/^\s+//g ;
     $result[0] = $line_tmp;
+
+    
     return ($const_cnt2,@result);#关于这里要不要减1,有待商榷
 }
 
@@ -149,6 +151,7 @@ sub get_length{
 #level
 sub get_level{
     my @lines = @_; 
+    
     #initial array
     #my @level = (0) x scalar(@lines);#这个初始化数组为全0
     my @level;
@@ -159,6 +162,7 @@ sub get_level{
         $cnt_level =level_cal($cnt_level, $line);
         push(@level,$cnt_level);
     }
+
     #####################################################################
     #更新层级
     #为了更好地对齐！
@@ -169,6 +173,7 @@ sub get_level{
             }
             -- $ll_cnt;
         }
+
     #####################################################################
     #为了更好地对齐
     $ll_cnt = 0;
@@ -285,6 +290,7 @@ sub head_block{
     my $case_cnt = 0;
     my $if_cnt = 0;
     my $if_appeared = 0;#如果出现过if,则置为1
+    my $next_sentense = 0;
     while($const_cnt2 < scalar(@lines)){
         my $line = $lines[$const_cnt2];
         #print $line."\tuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu\n";
@@ -299,34 +305,58 @@ sub head_block{
             $if_appeared = 1;
         };
         ###################################################################
-        #以分号结束,并且没碰到过if,说明always块结束了
-        if(0 == $if_appeared){
-            if(0 == $begin_cnt and 0 == $case_cnt){
-                push(@output,$line);
-                if($line =~ /;\s*$/)
-                {
-                    last;
+        #如果是以其他关键词结束，说明是该block已结束。
+        foreach my $head (@symbol::THE_HEAD){
+            if($line =~ /^\s*$head\s/){
+
+                if($next_sentense eq 0){
+                    ++ $next_sentense;
+                }else{
+                    -- $const_cnt2;
+                    return ($const_cnt2,@output);
                 }
             }
-        }elsif(0 == $begin_cnt and 0 == $case_cnt){
-            foreach my $head (@symbol::THE_HEAD){
-                if($line =~ /(^\s*|\s)$head\s/){
-                    -- $const_2;
-                    return ($const_cnt2,@output);
-                } 
-            }
-            push(@output,$line);
-        }else{
-            foreach my $head (@symbol::THE_HEAD){
-                if($line =~ /(^\s*|\s)$head\s/){
-                    -- $const_2;
-                    return ($const_cnt2,@output);
-                } 
-            }
-            push(@output,$line);
         }
+        #########################################################
+        #以分号结束,并且没碰到过if,说明always块结束了
+            # if(0 == $if_appeared){
+            #     if(0 == $begin_cnt and 0 == $case_cnt){
+            #         push(@output,$line);
+            #         if($line =~ /;\s*$/)
+            #         {
+            #             last;
+            #         }
+            #     }else{
+            #         push(@output,$line);
+            #     }
+            # }elsif(0 == $begin_cnt and 0 == $case_cnt){
+            #     foreach my $head (@symbol::THE_HEAD){
+            #         if($line =~ /(^\s*|\s)$head\s/){
+            #             -- $const_cnt2;
+            #             return ($const_cnt2,@output);
+            #         } 
+            #     }
+            #     push(@output,$line);
+            # }else{
+            #     push(@output,$line);
+            # }
+            if(0 == $if_appeared){
+                if(0 == $begin_cnt and 0 == $case_cnt){
+                    push(@output,$line);
+                    if($line =~ /;\s*$/)
+                    {
+                        last;
+                    }
+                }else{
+                    push(@output,$line);
+                }
+            }else{
+                push(@output,$line);
+            }
+        #########################################################
         ++ $const_cnt2;
     }
+
     return ($const_cnt2,@output);
 }
 

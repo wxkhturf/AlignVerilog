@@ -103,7 +103,7 @@ sub sum_align{
         } elsif( $line =~ /^\s*$symbol::DECL_REGEX(\s+|\[)/){
             ($cnt,@result) = declaration::align_decl($cnt,@lines);
             @output = (@output,@result);    
-        } elsif($line =~ /^\s*always(\s+|@|#|\()/){
+        } elsif($line =~ /^\s*always(\s*|@|#|\()/){
             ($cnt,@result) = block::align_block($cnt,@lines);
             @output = (@output,@result);    
         }
