@@ -7,11 +7,10 @@
 `include "param.v"
 `include "ys_poly_small.vh"
 module ys_poly_small_exe3(
-    clk            ,
+    clk            ,//input
    f_ctr          ,
       ram1_douta     ,
-    ram1_doutb     , 
-	//OUTPUT 
+    ram1_doutb     , //OUTPUT 
     ram2_dina      ,
       ram2_dinb      )
     ;

@@ -52,12 +52,12 @@ foreach $a (@all_files)
     #最后加上注释
         #加上"//"型注释
         while(my ($num,$value) = each (%note_1)){
-            my $tmp = $cont[$num];
+            my $tmp = $cont[$num+1];
             chomp($tmp);
             #print $num."\t".$value."\n";
             $tmp =~s/ +$//g;
             chomp($value);
-            $cont[$num] = $tmp ."\n".'//' . $value;
+            $cont[$num+1] = $tmp .'//' . $value ."\n";
         }
         #加上"/**/"型注释
         while(my ($num,$value) = each (%note_2)){

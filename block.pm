@@ -18,9 +18,9 @@ sub align_block{
     }
     #得到层级数
     my @level = get_level(@output);
-    foreach my $shit(@output){
-        print $shit."";
-    }
+    #foreach my $shit(@output){
+    #    print $shit."";
+    #}
     ###################################################################
     #开始对齐
     my $ll_begin = 0;
@@ -162,13 +162,13 @@ sub get_level{
     #####################################################################
     #更新层级
     #为了更好地对齐！
-    my $ll_cnt = scalar(@level);
-    while($ll_cnt >0){
-        if(($ll_cnt gt 0) and ($level[$ll_cnt] gt $level[$ll_cnt-1])){
-                $level[$ll_cnt] = $level[$ll_cnt-1];
+    my $ll_cnt = scalar(@level)-1;
+        while($ll_cnt >0){
+            if(($ll_cnt gt 0) and ($level[$ll_cnt] gt $level[$ll_cnt-1])){
+                    $level[$ll_cnt] = $level[$ll_cnt-1];
+            }
+            -- $ll_cnt;
         }
-        -- $ll_cnt;
-    }
     #####################################################################
     #为了更好地对齐
     $ll_cnt = 0;
