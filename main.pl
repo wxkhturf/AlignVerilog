@@ -12,7 +12,7 @@ require $path."/symbol.pm";
 
 
 
-open(FILEIN,"<./file_list");
+open(FILEIN,"<./file_list.f");
 my @all_files = <FILEIN>;
 close FILEIN;
 
